@@ -1,16 +1,14 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-/**
- * Vercel handler
- */
 module.exports = async (req, res) => {
-  // Autoriser les requêtes CORS
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  // ✅ Headers CORS complets
+  res.setHeader('Access-Control-Allow-Origin', '*'); // ou mettre "http://localhost:3000" si tu veux restreindre
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // ✅ Répond à la requête de prévalidation CORS
   if (req.method === 'OPTIONS') {
-    return res.status(200).end(); // réponse rapide aux preflight requests
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
@@ -33,8 +31,8 @@ module.exports = async (req, res) => {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: 'https://dailyloc.fr/success', // change ça plus tard
-      cancel_url: 'https://dailyloc.fr/cancel',   // change ça plus tard
+      success_url: 'https://dailyloc.fr/success',
+      cancel_url: 'https://dailyloc.fr/cancel',
     });
 
     res.status(200).json({ id: session.id });
@@ -43,4 +41,3 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: 'Stripe error', details: err.message });
   }
 };
-
